@@ -1,0 +1,11 @@
+{
+  "name": "scss-bezier-animations",
+  "version": "1.0.0",
+  "description": "Bezier animation timing is SCSS",
+  "repository": "https://github.com/rolfvandekrol/scss-bezier-animations",
+  "devDependencies": {
+    "gulp-sass": "^2.0.4",
+    "gulp": "^3.9.0",
+    "gulp-watch": "^4.3.5"
+  }
+}

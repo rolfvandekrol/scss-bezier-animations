@@ -1,0 +1,80 @@
+
+
+// a*x^3 + b*x^2 + c*x + d = 0.
+@function cubic-polynomial-roots($a, $b, $c, $d) {
+  @if ($a == 0) {
+    @return quadratic-polynomial-roots($b, $c, $d);
+  }
+
+  @return normalized-cubic-polynomial-roots($b / $a, $c / $a, $d / $a);
+}
+
+// a*x^2 + b*x + c = 0.
+@function quadratic-polynomial-roots($a, $b, $c) {
+  @if ($a == 0) {
+    @return linear-polynomial-roots($b, $c);
+  }
+
+  $d: pow($b, 2) - 4*$a*$c;
+
+  @if ($d < 0) {
+    @return ();
+  }
+
+  @if ($d == 0) {
+    @return (-1*$b/(2*$a),);
+  }
+
+  @return (
+    (-1 * $b - sqrt($d)) / (2*$a),
+    (-1 * $b + sqrt($d)) / (2*$a)
+  );
+
+  @return $a;
+}
+
+// x^3 + a*x^2 + b*x + c = 0.
+@function normalized-cubic-polynomial-roots($a, $b, $c) {
+  $q: (pow($a, 2) - 3*$b) / 9;
+  $r: (2*pow($a, 3) - 9*$a*$b + 27 * $c) / 54;
+
+  @if (pow($r, 2) < pow($q, 3)) {
+    $rho: acos($r / sqrt(pow($q, 3)));
+    @return (
+      -2 * sqrt($q) * cos($rho / 3) - $a / 3,
+      -2 * sqrt($q) * cos(($rho + 2*pi()) / 3) - $a / 3,
+      -2 * sqrt($q) * cos(($rho - 2*pi()) / 3) - $a / 3,
+    );
+  }
+
+  $aa: -1 * (pow(abs($r) + sqrt(pow($r, 2) - pow($q, 3)), 1/3));
+  @if ($r < 0) {
+    $aa: -1 * $aa;
+  }
+
+  $bb: 0;
+  @if ($aa != 0) {
+    $bb: $q / $aa;
+  }
+
+  @if ($aa == $bb) {
+    @return (
+      $aa + $bb - $a/3,
+      -1 / 2 * ($aa + $bb) - $a/3
+    );
+  }
+
+  @return ($aa + $bb - $a/3,);
+}
+
+// a*x + b = 0.
+@function linear-polynomial-roots($a, $b) {
+  @if ($a == 0) {
+    @return ();
+  }
+
+  // a*x + b = 0
+  // a*x = -b
+  // x = -b/a
+  @return (-1 * $b / $a,);
+}

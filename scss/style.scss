@@ -1,13 +1,12 @@
+@import 'bezier';
 
 $sidebar-width: 220px;
 $sidebar-icon-width: 50px;
 $sidebar-item-height: 50px;
 
-$transition-time: 20s;
-$base-transition-timing: 0.25, 0.1, 0.25, 1.0;
-$base-transition-timing-function: cubic-bezier($base-transition-timing);
-
-@import 'polynomial-roots';
+$transition-time: 1s;
+$base-transition-bezier: 0 0, 0.25 0.1, 0.25 1, 1 1;
+$base-transition-timing-function: cubic-bezier-to-css($base-transition-bezier...);
 
 html {
   box-sizing: border-box;
@@ -70,7 +69,12 @@ html, body {
           z-index: 1;
           padding: 5px;
 
-          transition: left ($transition-time * ($sidebar-icon-width / $sidebar-width)) $base-transition-timing-function ($transition-time * (1 - $sidebar-icon-width / $sidebar-width));
+          $param: cubic-bezier-parameter-from-progression($base-transition-bezier, ($sidebar-width - $sidebar-icon-width) / $sidebar-width);
+          $delay: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+          $duration: 1 - $delay;
+
+          $func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, $param, 1)...);
+          transition: left ($duration * $transition-time) $func ($delay * $transition-time);
         }
 
         .text {
@@ -92,7 +96,12 @@ html, body {
 
     .menu ul li .icon {
       left: 0;
-      transition: left ($transition-time * ($sidebar-icon-width / $sidebar-width)) $base-transition-timing-function;
+
+      $param: cubic-bezier-parameter-from-progression($base-transition-bezier, $sidebar-icon-width / $sidebar-width);
+      $duration: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+
+      $func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, 0, $param)...);
+      transition: left ($duration * $transition-time) $func;
     }
   }
 }

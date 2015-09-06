@@ -1,0 +1,22 @@
+
+@function sum-vectors($vectors...) {
+  $sum: nth($vectors, 1);
+
+  @for $i from 2 through length($vectors) {
+    @for $j from 1 through length(nth($vectors, $i)) {
+      $sum: set-nth($sum, $j, nth(nth($vectors, $i), $j) + nth($sum, $j));
+    }
+  }
+
+  @return $sum;
+}
+
+@function factor-vector($vector, $factor) {
+  $result: ();
+
+  @each $val in $vector {
+    $result: append($result, $val * $factor, list-separator($vector));
+  }
+
+  @return $result;
+}

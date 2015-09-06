@@ -1,0 +1,133 @@
+
+@import 'polynomial-roots';
+@import 'vectors';
+
+// Adapts a bezier curve so it's first point is 0 0 and the last point is 1 1.
+// bezier-normalize(3 4, 4 5, 5 6) => (0 0, 0.5 0.5, 1 1)
+@function bezier-normalize($points...) {
+  $result: ();
+
+  @each $point in $points {
+    $new_point: ();
+    @for $i from 1 through length($point) {
+      $first: nth(nth($points, 1), $i);
+      $last: nth(nth($points, length($points)), $i);
+      $point_value: nth($point, $i);
+
+      $value: ($point_value - $first) / ($last - $first);
+      // @return $point_value, $first, $last;
+      $new_point: append($new_point, $value, space);
+    }
+
+    $result: append($result, $new_point, comma);
+  }
+
+  @return $result;
+}
+
+@function de-casteljau($points, $j, $i, $t) {
+  @if ($j == 0) {
+    @return nth($points, $i + 1);
+  }
+
+  @return sum-vectors(
+    factor-vector(de-casteljau($points, $j - 1, $i, $t), 1 - $t),
+    factor-vector(de-casteljau($points, $j - 1, $i + 1, $t), $t)
+  );
+}
+
+@function bezier-segment($points, $from, $to) {
+  @if ($from == 0) {
+    @return bezier-split-before($points, $to);
+  }
+
+  @if ($to == 1) {
+    @return bezier-split-after($points, $from);
+  }
+
+  @return bezier-split-after(bezier-split-before($points, $to), $from);
+}
+
+@function bezier-split-before($points, $t) {
+  $result: ();
+
+  @for $j from 0 through (length($points) - 1) {
+    $result: append($result, de-casteljau($points, $j, 0, $t), comma);
+  }
+
+  @return $result;
+}
+
+@function bezier-split-after($points, $t) {
+  $result: ();
+
+  @for $i from 0 through (length($points) - 1) {
+    $result: append($result, de-casteljau($points, length($points) - 1 - $i, $i, $t), comma);
+  }
+
+  @return $result;
+}
+
+@function cubic-bezier-bernstein-polynomial($points, $index) {
+  $mapping: (
+    (-1, 3, -3, 1),
+    (3, -6, 3, 0),
+    (-3, 3, 0, 0),
+    (1, 0, 0, 0)
+  );
+
+  $result: (0, 0, 0, 0);
+
+  @for $i from 1 through length($points) {
+    @for $j from 1 through length(nth($mapping, $i)) {
+      $result: set-nth($result, $j, nth($result, $j) + nth(nth($mapping, $i), $j) * nth(nth($points, $i), $index));
+    }
+  }
+
+  @return $result;
+}
+
+@function cubic-bezier-parameter-from-value($points, $index, $value) {
+  $polynomial: cubic-bezier-bernstein-polynomial($points, $index);
+  $polynomial: set-nth($polynomial, 4, nth($polynomial, 4) - $value);
+  $roots: cubic-polynomial-roots($polynomial...);
+  @each $root in $roots {
+    @if ($root >= 0 and $root <= 1) {
+      @return $root;
+    }
+  }
+
+  @return null;
+}
+
+@function cubic-bezier-parameter-from-progression($points, $prog) {
+  @return cubic-bezier-parameter-from-value($points, 2, $prog);
+}
+
+@function cubic-bezier-parameter-from-duration($points, $duration) {
+  @return cubic-bezier-parameter-from-value($points, 1, $duration);
+}
+
+@function cubic-bezier-value-from-parameter($points, $index, $param) {
+  $polynomial: cubic-bezier-bernstein-polynomial($points, $index);
+
+  $result: 0;
+  @for $i from 1 through 4 {
+    $result: $result + pow($param, 4 - $i) * nth($polynomial, $i);
+  }
+
+  @return $result;
+}
+
+@function cubic-bezier-duration-from-parameter($points, $param) {
+  @return cubic-bezier-value-from-parameter($points, 1, $param);
+}
+
+@function cubic-bezier-progression-from-paramter($points, $param) {
+  @return cubic-bezier-value-from-parameter($points, 2, $param);
+}
+
+@function cubic-bezier-to-css($points...) {
+  $normalized: bezier-normalize($points...);
+  @return cubic-bezier(join(nth($normalized, 2), nth($normalized, 3), comma));
+}

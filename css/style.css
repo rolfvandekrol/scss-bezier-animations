@@ -1,0 +1,66 @@
+html {
+  box-sizing: border-box; }
+
+* {
+  box-sizing: inherit; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0; }
+
+.content {
+  text-align: right;
+  padding: 20px; }
+  .content a.switch {
+    padding: 10px;
+    background: #ccc; }
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  background: #aaa;
+  width: 0;
+  overflow: hidden;
+  transition: width 1s cubic-bezier(0.25, 0.1, 0.25, 1); }
+  .sidebar .menu {
+    width: 100%; }
+    .sidebar .menu ul {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      list-style: none; }
+      .sidebar .menu ul li {
+        width: 100%;
+        position: relative;
+        height: 50px;
+        margin-top: 10px; }
+        .sidebar .menu ul li .icon {
+          background: #c00000;
+          width: 50px;
+          height: 50px;
+          line-height: 40px;
+          position: absolute;
+          left: -50px;
+          top: 0;
+          z-index: 1;
+          padding: 5px;
+          transition: left 0.52832s cubic-bezier(0.22652, 0.58079, 0.53812, 1) 0.47168s; }
+        .sidebar .menu ul li .text {
+          padding: 5px 5px 5px 55px;
+          background: #00c000;
+          width: 220px;
+          height: 50px;
+          line-height: 40px;
+          position: absolute;
+          right: 0;
+          top: 0; }
+  .sidebar-open .sidebar {
+    width: 220px; }
+    .sidebar-open .sidebar .menu ul li .icon {
+      left: 0;
+      transition: left 0.1697s cubic-bezier(0.40349, 0.12051, 0.69646, 0.50507); }

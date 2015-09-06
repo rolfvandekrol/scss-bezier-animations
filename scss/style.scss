@@ -24,8 +24,9 @@ html, body {
 
 .content {
   text-align: right;
+  padding: 20px;
 
-  a {
+  a.switch {
     padding: 10px;
     background: #ccc;
   }

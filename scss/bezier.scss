@@ -45,7 +45,7 @@
     @return bezier-split-after($points, $from);
   }
 
-  @return bezier-split-after(bezier-split-before($points, $to), $from);
+  @return bezier-split-after(bezier-split-before($points, $to), $from / $to);
 }
 
 @function bezier-split-before($points, $t) {

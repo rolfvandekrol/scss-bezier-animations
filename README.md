@@ -1,5 +1,7 @@
 # SCSS Bezier animations
 
+[Demo](http://rolfvandekrol.github.io/scss-bezier-animations/)
+
 ## Bézier Curves
 
 CSS allows you to use self defined cubic Bézier curves for transition timing

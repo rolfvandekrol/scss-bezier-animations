@@ -1,6 +1,6 @@
 
 $(document).ready(function() {
-  $('.content a').click(function(e) {
+  $('.content a.switch').click(function(e) {
     e.preventDefault();
 
     $('body').toggleClass('sidebar-open');

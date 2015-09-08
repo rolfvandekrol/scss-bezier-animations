@@ -1,0 +1,64 @@
+$black: #000;
+$white: #fff;
+$green: #00e500;
+$red: #f50a0a;
+$light-gray: #929292;
+$dark-gray: #515151;
+
+html {
+  box-sizing: border-box;
+}
+* {
+  box-sizing: inherit;
+}
+
+html, body {
+  background: $black;
+  color: $white;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 30px;
+}
+
+body {
+  font-family: Titillium, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.steps-container {
+  display: flex;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  transition: transform 1s;
+}
+
+.step {
+  height: 100%;
+  padding: 20px;
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h1, h2, p {
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+h1 {
+  font-size: 2.5em;
+  color: $green;
+}
+h2 {
+  font-size: 1.5em;
+}
+
+@import 'demo/intro';
+@import 'demo/code';

@@ -1,0 +1,94 @@
+html {
+  box-sizing: border-box; }
+
+* {
+  box-sizing: inherit; }
+
+html, body {
+  background: #000;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 30px; }
+
+body {
+  font-family: Titillium, Arial, sans-serif;
+  overflow: hidden; }
+
+.steps-container {
+  display: flex;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: transform 1s; }
+
+.step {
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
+
+h1, h2, p {
+  margin: 0 0 10px;
+  padding: 0; }
+
+h1 {
+  font-size: 2.5em;
+  color: #00e500; }
+
+h2 {
+  font-size: 1.5em; }
+
+.intro-example-wrapper {
+  width: 997px;
+  height: 97px;
+  padding: 10px;
+  border: 1px solid #515151;
+  margin: 0 auto 20px; }
+
+.intro-example {
+  height: 75px;
+  width: 975px;
+  position: relative; }
+  .intro-example .cube {
+    height: 75px;
+    width: 75px;
+    background: #00e500;
+    position: absolute;
+    left: 0; }
+
+.intro-example .cube {
+  transition: left 3s; }
+  .intro-example-go .intro-example .cube {
+    left: 900px; }
+
+.intro-example-together-part-2 .cube, .intro-example-together-linear-part-2 .cube {
+  transition: left 1s; }
+  .intro-example-go .intro-example-together-part-2 .cube, .intro-example-go .intro-example-together-linear-part-2 .cube {
+    left: 300px; }
+
+.intro-example-linear .cube, .intro-example-together-linear-part-1 .cube {
+  transition: left 3s linear; }
+
+.intro-example-together-linear-part-2 .cube {
+  transition: left 1s linear; }
+
+.intro-example-linear-fast .cube {
+  transition: left 0.3s linear; }
+
+.intro-example-ease-fast .cube {
+  transition: left 0.3s ease; }
+
+.code {
+  text-align: left;
+  width: 997px;
+  padding: 10px 11px;
+  margin: 0 auto 10px;
+  font-size: 24px; }
+  .code pre {
+    font-family: 'Source Code Pro', monospace; }

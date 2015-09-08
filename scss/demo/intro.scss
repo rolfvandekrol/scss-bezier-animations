@@ -1,0 +1,71 @@
+
+$transition-duration: 3s;
+$example-cube-width: 75px;
+$example-transition-width: 900px;
+$example-width: $example-transition-width + $example-cube-width;
+
+.intro-example-wrapper {
+  width: $example-width + 22px;
+  height: $example-cube-width + 22px;
+  padding: 10px;
+  border: 1px solid $dark-gray;
+  margin: 0 auto 20px;
+}
+
+.intro-example {
+  height: $example-cube-width;
+  width: $example-width;
+  position: relative;
+
+  .cube {
+    height: $example-cube-width;
+    width: $example-cube-width;
+    background: $green;
+    position: absolute;
+    left: 0;
+  }
+}
+
+.intro-example {
+  .cube { 
+    transition: left $transition-duration;
+
+    .intro-example-go & {
+      left: $example-transition-width;
+    }
+  }
+}
+
+.intro-example-together-part-2, .intro-example-together-linear-part-2 {
+  .cube { 
+    transition: left ($transition-duration / 3);
+
+    .intro-example-go & {
+      left: ($example-transition-width / 3);
+    }
+  }
+}
+
+.intro-example-linear, .intro-example-together-linear-part-1 {
+  .cube { 
+    transition: left $transition-duration linear;
+  }
+}
+
+.intro-example-together-linear-part-2 {
+  .cube { 
+    transition: left ($transition-duration / 3) linear;
+  }
+}
+
+.intro-example-linear-fast {
+  .cube { 
+    transition: left ($transition-duration / 10) linear;
+  }
+}
+
+.intro-example-ease-fast {
+  .cube { 
+    transition: left ($transition-duration / 10) ease;
+  }
+}

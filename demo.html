@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Animations</title>
+    <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Titillium:400,700/Source+Code+Pro:400">
+    <link rel="stylesheet" href="css/demo.css">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/mathbox.js"></script>
+    <script type="text/javascript" src="js/steps.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+  </head>
+  <body>
+    <div class="steps-container">
+      <div class="step step-cover">
+        <h1>CSS Animations</h1>
+        <h2>Bezier curves and timing</h2>
+
+        <p>Rolf van de Krol</p>
+      </div>
+      <div class="step step-intro-1">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left 3s; 
+
+  .go &amp; {
+    left: 900px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-simple"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-2">
+        <div class="code"><pre>.a, .b {
+  left: 0;
+  transition: left 3s; 
+
+  .go &amp; {
+    left: 900px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-1"><div class="cube"></div></div></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-2"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-3">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left 3s; 
+
+  .go &amp; {
+    left: 900px;
+  }
+}
+.b {
+  left: 0;
+  transition: left 1s; 
+
+  .go &amp; {
+    left: 300px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-part-1"><div class="cube"></div></div></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-part-2"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-4">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left 3s linear;
+
+  .go &amp; {
+    left: 900px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-linear"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-5">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left 3s linear; 
+
+  .go &amp; {
+    left: 900px;
+  }
+}
+.b {
+  left: 0;
+  transition: left 1s linear; 
+
+  .go &amp; {
+    left: 300px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-linear-part-1"><div class="cube"></div></div></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-together-linear-part-2"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-6">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left .3s linear;
+
+  .go &amp; {
+    left: 900px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-linear-fast"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-intro-7">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left .3s ease;
+
+  .go &amp; {
+    left: 900px;
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-ease-fast"><div class="cube"></div></div></div>
+      </div>
+    </div>
+
+  </body>
+</html>

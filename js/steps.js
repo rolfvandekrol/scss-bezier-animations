@@ -1,4 +1,109 @@
 
+
+// sweep(0) => 0
+// sweep(1) => 1
+// swepp(2) => 0
+var sweep = function(t) {
+  return Math.sin( // soften toothsaw
+    Math.min(1, Math.max(-1, // flatten edges of toothsaw
+      Math.asin(Math.sin(π*(t-0.5)))*0.7 // toothsaw
+    ))
+    *π/2
+  )
+  *0.5+0.5; // keep values between 0 and 1
+};
+
+var create_clock = function(duration) {
+  var base;
+  var paused;
+  var pauseCheck;
+
+  var getVal = function(now) {
+    var t = (now - base);
+    return sweep(t / 1000 / duration);
+  };
+
+  var get = function() {
+    if (base === undefined) {
+      return 0;
+    } else {
+      if (paused === undefined) {
+        var now = +new Date;
+        var val = getVal(now);
+
+        if (pauseCheck !== undefined) {
+          if (pauseCheck(val)) {
+            pause();
+            pauseCheck = undefined;
+          }
+        }
+
+        return val;
+      } else {
+        var t = (paused - base);
+        return sweep(t / 1000 / duration);
+      }
+    }
+  };
+  var start = function() {
+    base = +new Date;
+  };
+
+  var pause = function() {
+    if (base === undefined) {
+      return;
+    }
+
+    paused = +new Date;
+  };
+
+  var pauseAt = function(val) {
+    if (base === undefined) {
+      return;
+    }
+
+    if (paused !== undefined) {
+      return;
+    }
+
+    var now = +new Date;
+    var cur_val = getVal(now);
+
+    if (val > cur_val) {
+      pauseCheck = function(v) {
+        return (v >= val);
+      };
+    } else {
+      pauseCheck = function(v) {
+        return (v <= val);
+      };
+    }
+  };
+  
+  var resume = function() {
+    if (base === undefined) {
+      base = +new Date;
+      return;
+    } else {
+      if (paused !== undefined) {
+        var now = +new Date;
+        base = base + (now - paused) // progress the base by the pause time
+
+        paused = undefined;
+        pauseCheck = undefined;
+      }
+    }
+  };
+  
+  return {
+    get: get,
+    start: start,
+    pause: pause,
+    resume: resume,
+    pauseAt: pauseAt
+  };
+};
+
 var steps = [].concat(
   [{ key: 'cover' }],
 
@@ -25,34 +130,7 @@ var steps = [].concat(
   (function() {
     var mathbox;
 
-    var fixed = {};
-    var clocks = {};
-    var clock = function (id) {
-      if (!clocks[id]) clocks[id] = +new Date();
-      d = +new Date;
-      if (fixed[id]) d = fixed[id];
-      return (d - clocks[id]) * .001;
-    };
-
-    var fixClock = function(id) {
-      var d = +new Date();
-      if (!clocks[id]) clocks[id] = d;
-      if (!fixed[id]) fixed[id] = d;
-    };
-
-    var unfixClock = function(id) {
-      if (fixed[id]) {
-        var d = +new Date();
-        clocks[id] = d - fixed[id] + clocks[id];
-        delete fixed[id];
-      }
-    };
-
-    var lerptime = function(t) {
-      t = t*.33-.5;
-      t = Math.sin(Math.min(1, Math.max(-1, .7*Math.asin(Math.sin(π*t))))*τ/4);
-      return t*.5+.5;
-    }
+    var clock = create_clock(3);
 
     var c = [[0, 0], [0.25, 0.1], [0.25, 1], [1,1]];
 
@@ -118,7 +196,7 @@ var steps = [].concat(
         },
         points: true,
         line: false,
-        color: demo_colors.light_gray,
+        color: demo_colors.yellow,
         pointSize: 20,
         zIndex: 4,
       });
@@ -129,7 +207,7 @@ var steps = [].concat(
           domain: [0, 0],
           data: [c[i-1], c[i]],
           order: 1,
-          color: demo_colors.light_gray,
+          color: demo_colors.yellow,
           opacity: 1,
           zIndex: 2
         });
@@ -141,11 +219,11 @@ var steps = [].concat(
         opacity: 0,
         domain: [0, 2],
         expression: function (x) {
-          return decasteljau(x, 1, lerptime(clock('bezier-points-1')));
+          return decasteljau(x, 1, clock.get());
         },
         points: true,
         line: false,
-        color: demo_colors.light_gray,
+        color: demo_colors.blue,
         pointSize: 15,
         zIndex: 3,
       });
@@ -155,10 +233,10 @@ var steps = [].concat(
         n: 64,
         domain: [0, 1],
         expression: function (i) {
-          return decasteljau(i, 1, lerptime(clock('bezier-points-1')));
+          return decasteljau(i, 1, clock.get());
         },
         order: 1,
-        color: demo_colors.light_gray,
+        color: demo_colors.blue,
         opacity: 0,
         zIndex: 2
       });
@@ -167,10 +245,10 @@ var steps = [].concat(
         n: 64,
         domain: [0, 1],
         expression: function (i) {
-          return decasteljau(i+1, 1, lerptime(clock('bezier-points-1')));
+          return decasteljau(i+1, 1, clock.get());
         },
         order: 1,
-        color: demo_colors.light_gray,
+        color: demo_colors.blue,
         opacity: 0,
         zIndex: 2
       });
@@ -181,11 +259,11 @@ var steps = [].concat(
         opacity: 0,
         domain: [0, 1],
         expression: function (i) {
-          return decasteljau(i, 2, lerptime(clock('bezier-points-1')));
+          return decasteljau(i, 2, clock.get());
         },
         points: true,
         line: false,
-        color: demo_colors.light_gray,
+        color: demo_colors.red,
         pointSize: 15,
         zIndex: 3,
       });
@@ -195,10 +273,10 @@ var steps = [].concat(
         n: 64,
         domain: [0, 1],
         expression: function (i) {
-          return decasteljau(i, 2, lerptime(clock('bezier-points-1')));
+          return decasteljau(i, 2, clock.get());
         },
         order: 1,
-        color: demo_colors.light_gray,
+        color: demo_colors.red,
         opacity: 0,
         zIndex: 2
       });
@@ -209,7 +287,7 @@ var steps = [].concat(
         opacity: 0,
         domain: [0, 2],
         expression: function (x) {
-          return decasteljau(0, 3, lerptime(clock('bezier-points-1')));
+          return decasteljau(0, 3, clock.get());
         },
         points: true,
         line: false,
@@ -222,7 +300,7 @@ var steps = [].concat(
         id: 'bezier-curve-2',
         domain: [0, 1],
         expression: function(i) {
-          return decasteljau(0, i, lerptime(clock('bezier-points-1')));
+          return decasteljau(0, i, clock.get());
         },
         order: 3,
         color: demo_colors.green,
@@ -270,6 +348,7 @@ var steps = [].concat(
     var attach6 = function(step) {
       setupBox(step);
       mathbox.animate('#bezier-points-1', { opacity: 1 }, { duration: 500 });
+      clock.start();
     };
     var detach6 = function(step) {
       mathbox.animate('#bezier-points-1', { opacity: 0 }, { duration: 500 });
@@ -319,10 +398,10 @@ var steps = [].concat(
     };
 
     var attach12 = function(step) {
-      fixClock('bezier-points-1');
+      clock.pauseAt(0.75);
     };
     var detach12 = function(step) {
-      unfixClock('bezier-points-1');
+      clock.resume();
     }
 
     var attach13 = function(step) {

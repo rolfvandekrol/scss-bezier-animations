@@ -2,7 +2,7 @@
 $(document).ready(function() {
   var step = 0;
 
-  var setup = function() {
+  var redraw = function() {
     var w = $(window).width();
     var t = $('.steps-container > .step').length;
     var s = $('.steps-container .step.step-' + steps[step].key).prevAll('.step').length;
@@ -18,7 +18,7 @@ $(document).ready(function() {
   var change_step = function(new_step) {
     var prev_step = step;
     step = new_step;
-    setup();
+    redraw();
 
     if (steps[prev_step].detach !== undefined) {
       steps[prev_step].detach($('.steps-container .step.step-' + steps[prev_step].key));
@@ -35,24 +35,30 @@ $(document).ready(function() {
     }
   };
 
-  setup();
-  if (steps[step].attach !== undefined) {
-    steps[step].attach($('.steps-container .step.step-' + steps[step].key));
-  }
-
-  $(window).on('load resize', setup);
-  $(window).keydown(function(event) {
-    if (event.keyCode == 32 || event.keyCode == 39) {
-      if (step < steps.length-1) {
-        change_step(step + 1);
-      }
+  var setup = function() {
+    redraw();
+    if (steps[step].attach !== undefined) {
+      steps[step].attach($('.steps-container .step.step-' + steps[step].key));
     }
 
-    if (event.keyCode == 37) {
-      if (step > 0) {
-        change_step(step - 1);
+    $(window).on('load resize', redraw);
+    $(window).keydown(function(event) {
+      if (event.keyCode == 32 || event.keyCode == 39) {
+        if (step < steps.length-1) {
+          change_step(step + 1);
+        }
       }
-    }
-  });
+
+      if (event.keyCode == 37) {
+        if (step > 0) {
+          change_step(step - 1);
+        }
+      }
+    });
+  };
+
+  ThreeBox.preload([
+    'shaders/glsl.html',
+  ], setup);
 
 });

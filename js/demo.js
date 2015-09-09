@@ -3,8 +3,12 @@
 window.demo_colors = {
   black: 0x000000,
   white: 0xffffff,
+
   green: 0x00e500,
   red: 0xf50a0a,
+  yellow: 0xfff200,
+  blue: 0x00c1f3,
+
   light_gray: 0x929292,
   dark_gray: 0x515151,
 }

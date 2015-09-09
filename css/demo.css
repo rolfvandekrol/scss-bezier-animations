@@ -84,6 +84,11 @@ h2 {
 .intro-example-ease-fast .cube {
   transition: left 0.3s ease; }
 
+.bezier {
+  width: 600px;
+  height: 600px;
+  margin: 0 auto; }
+
 .code {
   text-align: left;
   width: 997px;

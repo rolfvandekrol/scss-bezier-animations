@@ -1,4 +1,14 @@
 
+
+window.demo_colors = {
+  black: 0x000000,
+  white: 0xffffff,
+  green: 0x00e500,
+  red: 0xf50a0a,
+  light_gray: 0x929292,
+  dark_gray: 0x515151,
+}
+
 $(document).ready(function() {
   var step = 0;
 

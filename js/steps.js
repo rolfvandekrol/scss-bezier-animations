@@ -16,35 +16,51 @@ var sweep = function(t) {
 var create_clock = function(duration) {
   var base;
   var paused;
-  var pauseCheck;
+  var waiting = {};
+
+  var getT = function(now) {
+    if (base === undefined) {
+      return 0;
+    }
+
+    if (paused !== undefined) {
+      return paused - base;
+    }
+
+    return (now - base);
+  };
 
   var getVal = function(now) {
-    var t = (now - base);
-    return sweep(t / 1000 / duration);
+    if (base === undefined) {
+      return 0;
+    }
+
+    return sweep(getT(now) / 1000 / duration);
   };
 
   var get = function() {
     if (base === undefined) {
       return 0;
-    } else {
-      if (paused === undefined) {
-        var now = +new Date;
-        var val = getVal(now);
+    }
 
-        if (pauseCheck !== undefined) {
-          if (pauseCheck(val)) {
-            pause();
-            pauseCheck = undefined;
+    var now = +new Date;
+    var val = getVal(now);
+
+    if (paused === undefined) {
+      var k;
+      for (k in waiting) {
+        if (waiting.hasOwnProperty(k)) {
+          if (waiting[k].check(val)) {
+            waiting[k].callback();
+            delete waiting[k];
           }
         }
-
-        return val;
-      } else {
-        var t = (paused - base);
-        return sweep(t / 1000 / duration);
       }
     }
+
+    return val;
   };
+
   var start = function() {
     base = +new Date;
   };
@@ -58,25 +74,9 @@ var create_clock = function(duration) {
   };
 
   var pauseAt = function(val) {
+    waitTill('pause', val, pause);
     if (base === undefined) {
       return;
-    }
-
-    if (paused !== undefined) {
-      return;
-    }
-
-    var now = +new Date;
-    var cur_val = getVal(now);
-
-    if (val > cur_val) {
-      pauseCheck = function(v) {
-        return (v >= val);
-      };
-    } else {
-      pauseCheck = function(v) {
-        return (v <= val);
-      };
     }
   };
   
@@ -90,8 +90,28 @@ var create_clock = function(duration) {
         base = base + (now - paused) // progress the base by the pause time
 
         paused = undefined;
-        pauseCheck = undefined;
       }
+    }
+  };
+
+  var waitTill = function(key, val, callback) {
+    var now = +new Date;
+    var cur_val = getVal(now);
+
+    if (val > cur_val) {
+      waiting[key] = {
+        check: function(v) {
+          return (v >= val);
+        },
+        callback: callback
+      };
+    } else {
+      waiting[key] = {
+        check: function(v) {
+          return (v <= val);
+        },
+        callback: callback
+      };
     }
   };
   
@@ -100,7 +120,8 @@ var create_clock = function(duration) {
     start: start,
     pause: pause,
     resume: resume,
-    pauseAt: pauseAt
+    pauseAt: pauseAt,
+    waitTill, waitTill
   };
 };
 
@@ -182,122 +203,53 @@ var steps = [].concat(
         data: c,
         order: 3,
         color: demo_colors.green,
-        zIndex: 1
+        zIndex: 1,
+        opacity: 1
       });
 
-      // bezier points
-      mathbox.curve({
-        id: 'bezier-points',
-        n: 4,
-        opacity: 0,
-        domain: [0, 3],
-        expression: function (x) {
-          return c[x];
-        },
-        points: true,
-        line: false,
-        color: demo_colors.yellow,
-        pointSize: 20,
-        zIndex: 4,
-      });
+      (function() {
+        var i, j;
+        var colors = ['yellow', 'blue', 'red', 'green'];
 
-      for (var i = 1; i <= 3; i++) {
-        mathbox.bezier({
-          id: 'bezier-polygon-' + i,
-          domain: [0, 0],
-          data: [c[i-1], c[i]],
-          order: 1,
-          color: demo_colors.yellow,
-          opacity: 1,
-          zIndex: 2
-        });
-      };
-      
-      mathbox.curve({
-        id: 'bezier-points-1',
-        n: 3,
-        opacity: 0,
-        domain: [0, 2],
-        expression: function (x) {
-          return decasteljau(x, 1, clock.get());
-        },
-        points: true,
-        line: false,
-        color: demo_colors.blue,
-        pointSize: 15,
-        zIndex: 3,
-      });
+        for (j = 0; j < 4; j++) {
+          for (i = 0; i < (4 - j); i++) {
+            (function(i, j) {
+              mathbox.curve({
+                id: 'bezier-point-' + j + '-' + i,
+                n: 1,
+                opacity: 0,
+                domain: [0, 1],
+                expression: function (x) {
+                  return decasteljau(i, j, clock.get());
+                },
+                points: true,
+                line: false,
+                color: demo_colors[colors[j]],
+                pointSize: j > 0 ? 15 : 20,
+                zIndex: j > 0 ? (2*j) : 10,
+              });
 
-      mathbox.bezier({
-        id: 'bezier-polygon-1-1',
-        n: 64,
-        domain: [0, 1],
-        expression: function (i) {
-          return decasteljau(i, 1, clock.get());
-        },
-        order: 1,
-        color: demo_colors.blue,
-        opacity: 0,
-        zIndex: 2
-      });
-      mathbox.bezier({
-        id: 'bezier-polygon-1-2',
-        n: 64,
-        domain: [0, 1],
-        expression: function (i) {
-          return decasteljau(i+1, 1, clock.get());
-        },
-        order: 1,
-        color: demo_colors.blue,
-        opacity: 0,
-        zIndex: 2
-      });
-
-      mathbox.curve({
-        id: 'bezier-points-2',
-        n: 2,
-        opacity: 0,
-        domain: [0, 1],
-        expression: function (i) {
-          return decasteljau(i, 2, clock.get());
-        },
-        points: true,
-        line: false,
-        color: demo_colors.red,
-        pointSize: 15,
-        zIndex: 3,
-      });
+              if (i < (3 - j)) {
+                mathbox.bezier({
+                  id: 'bezier-polygon-' + j + '-' + i,
+                  n: 64,
+                  domain: [0, 1],
+                  expression: function (ii) {
+                    return decasteljau(i + ii, j, clock.get());
+                  },
+                  order: 1,
+                  color: demo_colors[colors[j]],
+                  opacity: 0,
+                  zIndex: 1 + (2 * j),
+                });
+              }
+            })(i, j);
+          }
+        }
+      })();
 
       mathbox.bezier({
-        id: 'bezier-polygon-2-1',
-        n: 64,
-        domain: [0, 1],
-        expression: function (i) {
-          return decasteljau(i, 2, clock.get());
-        },
-        order: 1,
-        color: demo_colors.red,
-        opacity: 0,
-        zIndex: 2
-      });
-
-      mathbox.curve({
-        id: 'bezier-points-3',
-        n: 1,
-        opacity: 0,
-        domain: [0, 2],
-        expression: function (x) {
-          return decasteljau(0, 3, clock.get());
-        },
-        points: true,
-        line: false,
-        color: demo_colors.green,
-        pointSize: 15,
-        zIndex: 3,
-      });
-
-      mathbox.bezier({
-        id: 'bezier-curve-2',
+        id: 'bezier-curve-dynamic',
         domain: [0, 1],
         expression: function(i) {
           return decasteljau(0, i, clock.get());
@@ -305,126 +257,141 @@ var steps = [].concat(
         order: 3,
         color: demo_colors.green,
         zIndex: 1,
-        opacity: 0
+        opacity: 0,
       });
-    }
-
-    var attach1 = function(step) {
-      setupBox(step);
     };
-
-    var attach2 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-curve', { domain: [0, 1] }, { duration: 500 });
-    };
-    var detach2 = function(step) {
-      mathbox.animate('#bezier-curve', { domain: [0, 0] }, { duration: 500 });
-    };
-    var attach3 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-points', { opacity: 1 }, { duration: 500 });
-    };
-    var detach3 = function(step) {
-      mathbox.animate('#bezier-points', { opacity: 0 }, { duration: 500 });
-    };
-    var attach4 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-curve', { domain: [1,1] }, { duration: 500 });
-    };
-    var detach4 = function(step) {
-      mathbox.animate('#bezier-curve', { domain: [0,1] }, { duration: 500 });
-    };
-    var attach5 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-polygon-1', { domain: [0,1] }, { duration: 200 });
-      mathbox.animate('#bezier-polygon-2', { domain: [0,1] }, { duration: 200, delay: 200 });
-      mathbox.animate('#bezier-polygon-3', { domain: [0,1] }, { duration: 200, delay: 400 });
-    };
-    var detach5 = function(step) {
-      mathbox.animate('#bezier-polygon-3', { domain: [0,0] }, { duration: 200 });
-      mathbox.animate('#bezier-polygon-2', { domain: [0,0] }, { duration: 200, delay: 200 });
-      mathbox.animate('#bezier-polygon-1', { domain: [0,0] }, { duration: 200, delay: 400 });
-    };
-    var attach6 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-points-1', { opacity: 1 }, { duration: 500 });
-      clock.start();
-    };
-    var detach6 = function(step) {
-      mathbox.animate('#bezier-points-1', { opacity: 0 }, { duration: 500 });
-    };
-    var attach7 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-polygon-1-1', { opacity: 1 }, { duration: 200 });
-      mathbox.animate('#bezier-polygon-1-2', { opacity: 1 }, { duration: 200, delay: 200 });
-    };
-    var detach7 = function(step) {
-      mathbox.animate('#bezier-polygon-1-2', { opacity: 0 }, { duration: 200 });
-      mathbox.animate('#bezier-polygon-1-1', { opacity: 0 }, { duration: 200, delay: 200 });
-    };
-    var attach8 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-points-2', { opacity: 1 }, { duration: 500 });
-    };
-    var detach8 = function(step) {
-      mathbox.animate('#bezier-points-2', { opacity: 0 }, { duration: 500 });
-    };
-    var attach9 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-polygon-2-1', { opacity: 1 }, { duration: 500 });
-    };
-    var detach9 = function(step) {
-      mathbox.animate('#bezier-polygon-2-1', { opacity: 0 }, { duration: 500 });
-    };
-    var attach10 = function(step) {
-      setupBox(step);
-      mathbox.animate('#bezier-points-3', { opacity: 1 }, { duration: 500 });
-    };
-    var detach10 = function(step) {
-      mathbox.animate('#bezier-points-3', { opacity: 0 }, { duration: 500 });
-    };
-
-    var attach11 = function(step) {
-      setupBox(step);
-      // mathbox.set('#bezier-curve', { domain_expression: function() {
-      //   return [ 0, lerptime(clock('bezier-points-1')) ];
-      // } }, { duration: 500 });
-
-      mathbox.animate('#bezier-curve-2', { opacity: 1 }, { duration: 500 });
-    };
-    var detach11 = function(step) {
-      // mathbox.set('#bezier-curve', { domain_expression: null }, { duration: 500 });
-      mathbox.animate('#bezier-curve-2', { opacity: 0 }, { duration: 500 });
-    };
-
-    var attach12 = function(step) {
-      clock.pauseAt(0.75);
-    };
-    var detach12 = function(step) {
-      clock.resume();
-    }
-
-    var attach13 = function(step) {
-      //fixClock('bezier-points-1');
-    };
-    var detach13 = function(step) {
-      //unfixClock('bezier-points-1');
-    }
 
     return [
-      { key: 'bezier-1', attach: attach1 },
-      { key: 'bezier-1', attach: attach2, detachPrev: detach2 },
-      { key: 'bezier-1', attach: attach3, detachPrev: detach3 },
-      { key: 'bezier-1', attach: attach4, detachPrev: detach4 },
-      { key: 'bezier-1', attach: attach5, detachPrev: detach5 },
-      { key: 'bezier-1', attach: attach6, detachPrev: detach6 },
-      { key: 'bezier-1', attach: attach7, detachPrev: detach7 },
-      { key: 'bezier-1', attach: attach8, detachPrev: detach8 },
-      { key: 'bezier-1', attach: attach9, detachPrev: detach9 },
-      { key: 'bezier-1', attach: attach10, detachPrev: detach10 },
-      { key: 'bezier-1', attach: attach11, detachPrev: detach11 },
-      { key: 'bezier-1', attach: attach12, detachPrev: detach12 },
-      // { key: 'bezier-1', attach: attach13, detachPrev: detach13 },
+      { key: 'bezier-1', 
+        attach: function(step) { 
+          setupBox(step); 
+        }},
+      { key: 'bezier-1', 
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.animate('#bezier-curve', { domain: [0, 1] }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-curve', { domain: [0, 0] }, { duration: 500 });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.animate('#bezier-point-0-0', { opacity: 1 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-1', { opacity: 1 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-2', { opacity: 1 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-3', { opacity: 1 }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-point-0-0', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-1', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-2', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-point-0-3', { opacity: 0 }, { duration: 500 });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.animate('#bezier-curve', { domain: [1, 1] }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-curve', { domain: [0, 1] }, { duration: 500 });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.animate('#bezier-polygon-0-0', { opacity: 1 }, { duration: 500 });
+          mathbox.animate('#bezier-polygon-0-1', { opacity: 1 }, { duration: 500 });
+          mathbox.animate('#bezier-polygon-0-2', { opacity: 1 }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-polygon-0-0', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-polygon-0-1', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-polygon-0-2', { opacity: 0 }, { duration: 500 });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.set('#bezier-point-1-0', { opacity: 1 });
+          mathbox.set('#bezier-point-1-1', { opacity: 1 });
+          mathbox.set('#bezier-point-1-2', { opacity: 1 });
+          clock.resume();
+        },
+        detachPrev: function(step) {
+          clock.waitTill('point-1', 0, function() {
+            mathbox.set('#bezier-point-1-0', { opacity: 0 });
+            mathbox.set('#bezier-point-1-1', { opacity: 0 });
+            mathbox.set('#bezier-point-1-2', { opacity: 0 });
+            clock.pause();
+          });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step);
+          clock.waitTill('polygon-1', 0.5, function() {
+            mathbox.animate('#bezier-polygon-1-0', { opacity: 1 }, { duration: 500 });
+            mathbox.animate('#bezier-polygon-1-1', { opacity: 1 }, { duration: 500 });
+          });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-polygon-1-0', { opacity: 0 }, { duration: 500 });
+          mathbox.animate('#bezier-polygon-1-1', { opacity: 0 }, { duration: 500 });
+        }},
+      { key: 'bezier-1', 
+        attach: function(step) {
+          setupBox(step);
+          clock.waitTill('points-2', 0, function() {
+            mathbox.set('#bezier-point-2-0', { opacity: 1 });
+            mathbox.set('#bezier-point-2-1', { opacity: 1 });
+          });
+        },
+        detachPrev: function(step) {
+          clock.waitTill('point-2', 0, function() {
+            mathbox.set('#bezier-point-2-0', { opacity: 0 });
+            mathbox.set('#bezier-point-2-1', { opacity: 0 });
+          });
+        }},
+      { key: 'bezier-1',
+        attach: function(step) {
+          setupBox(step);
+          clock.waitTill('polygon-2', 0.5, function() {
+            mathbox.animate('#bezier-polygon-2-0', { opacity: 1 }, { duration: 500 });
+          });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bezier-polygon-2-0', { opacity: 0 }, { duration: 500 });
+        }},
+      { key: 'bezier-1', 
+        attach: function(step) {
+          setupBox(step);
+          clock.waitTill('points-3', 0, function() {
+            mathbox.set('#bezier-point-3-0', { opacity: 1 });
+          });
+        },
+        detachPrev: function(step) {
+          clock.waitTill('points-3', 0, function() {
+            mathbox.set('#bezier-point-3-0', { opacity: 0 });
+          });
+        }},
+      { key: 'bezier-1', 
+        attach: function(step) {
+          setupBox(step);
+          clock.waitTill('curve-dynamic', 0, function() {
+            mathbox.set('#bezier-curve-dynamic', { opacity: 1 });
+          });
+        },
+        detachPrev: function(step) {
+          clock.waitTill('curve-dynamic', 0, function() {
+            mathbox.set('#bezier-curve-dynamic', { opacity: 0 });
+          });
+        }},
+      { key: 'bezier-1', 
+        attach: function(step) {
+          setupBox(step);
+          clock.pauseAt(0.65);
+        },
+        detachPrev: function(step) {
+          clock.resume();
+        }},
     ];
   })()
 );

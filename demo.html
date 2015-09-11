@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/demo.css">
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/mathbox.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="js/steps.js"></script>
     <script type="text/javascript" src="js/demo.js"></script>
   </head>
@@ -116,6 +117,11 @@
       </div>
       <div class="step step-bezier-1">
         <div class="bezier"></div>
+      </div>
+      <div class="step step-decasteljau">
+        <p>Curve \(\beta\) with control points \(\beta_0, \ldots, \beta_n\)</p>
+        <p>\[\beta_i^{(0)} := \beta_i \mbox{ , } i=0,\ldots,n\]</p>
+        <p>\[\beta_i^{(j)} := \beta_i^{(j-1)} (1-t_0) + \beta_{i+1}^{(j-1)} t_0 \mbox{ , } i = 0,\ldots,n-j \mbox{ , } j= 1,\ldots,n\]</p>
       </div>
     </div>
   </body>

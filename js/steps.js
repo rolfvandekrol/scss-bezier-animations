@@ -393,5 +393,11 @@ var steps = [].concat(
           clock.resume();
         }},
     ];
+  })(),
+
+  (function() {
+    return [
+      { key: 'decasteljau' }
+    ];
   })()
 );

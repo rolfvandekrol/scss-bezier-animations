@@ -89,6 +89,9 @@ h2 {
   height: 600px;
   margin: 0 auto; }
 
+.step-decasteljau {
+  font-size: 1.2em; }
+
 .code {
   text-align: left;
   width: 997px;

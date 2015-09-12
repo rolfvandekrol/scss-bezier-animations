@@ -31,7 +31,8 @@ body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; }
+  justify-content: center;
+  position: relative; }
 
 h1, h2, p {
   margin: 0 0 20px;

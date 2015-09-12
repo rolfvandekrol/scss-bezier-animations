@@ -126,7 +126,10 @@ var create_clock = function(duration) {
 };
 
 var steps = [].concat(
-  [{ key: 'cover' }],
+  [
+    { key: 'cover' },
+    { key: 'intro-title' }
+  ],
 
   (function() {
     var intro_example_go = {
@@ -375,6 +378,7 @@ var steps = [].concat(
       { key: 'bezier-1', 
         attach: function(step) {
           setupBox(step);
+          clock.resume();
           clock.waitTill('curve-dynamic', 0, function() {
             mathbox.set('#bezier-curve-dynamic', { opacity: 1 });
           });
@@ -383,21 +387,22 @@ var steps = [].concat(
           clock.waitTill('curve-dynamic', 0, function() {
             mathbox.set('#bezier-curve-dynamic', { opacity: 0 });
           });
-        }},
-      { key: 'bezier-1', 
-        attach: function(step) {
-          setupBox(step);
-          clock.pauseAt(0.65);
         },
-        detachPrev: function(step) {
-          clock.resume();
+        detachNext: function(step) {
+          clock.pause();
         }},
+      // { key: 'bezier-1', 
+      //   attach: function(step) {
+      //     setupBox(step);
+      //     clock.pauseAt(0.65);
+      //   },
+      //   detachPrev: function(step) {
+      //     clock.resume();
+      //   }},
     ];
   })(),
-
-  (function() {
-    return [
-      { key: 'decasteljau' }
-    ];
-  })()
+  [
+    { key: 'decasteljau' },
+    { key: 'decasteljau-numbers' }
+  ]
 );

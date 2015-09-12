@@ -2,3 +2,18 @@
 .step-decasteljau {
   font-size: 1.2em;
 }
+
+.step-decasteljau-numbers {
+  font-size: 0.8em;
+  
+  .row {
+    display: flex;
+    flex-direction: columns;
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  .number {
+    padding: 20px;
+  }
+}

@@ -19,6 +19,9 @@
 
         <p>Rolf van de Krol</p>
       </div>
+      <div class="step step-intro-title">
+        <h2>Transitions</h2>
+      </div>
       <div class="step step-intro-1">
         <div class="code"><pre>.a {
   left: 0;
@@ -119,9 +122,52 @@
         <div class="bezier"></div>
       </div>
       <div class="step step-decasteljau">
+        <h2>De Casteljau's Algorithm</h2>
         <p>Curve \(\beta\) with control points \(\beta_0, \ldots, \beta_n\)</p>
+        <p>Point at \(t_0\):</p>
         <p>\[\beta_i^{(0)} := \beta_i \mbox{ , } i=0,\ldots,n\]</p>
         <p>\[\beta_i^{(j)} := \beta_i^{(j-1)} (1-t_0) + \beta_{i+1}^{(j-1)} t_0 \mbox{ , } i = 0,\ldots,n-j \mbox{ , } j= 1,\ldots,n\]</p>
+      </div>
+      <div class="step step-decasteljau-numbers">
+        <p>\[t_0 = \tfrac{1}{2}\]</p>
+        <div class="row">
+          <div class="number">
+            \[\beta_0^{(0)} = \begin{bmatrix} 0 \\ 0 \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_1^{(0)} = \begin{bmatrix} \tfrac{1}{4} \\ \tfrac{1}{10} \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_2^{(0)} = \begin{bmatrix} \tfrac{1}{4} \\ 1 \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_3^{(0)} = \begin{bmatrix} 1 \\ 1 \\ \end{bmatrix} \]
+          </div>
+        </div>
+        <div class="row">
+          <div class="number">
+            \[\beta_0^{(1)} = \begin{bmatrix} \tfrac{1}{8} \\ \tfrac{1}{20} \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_1^{(1)} = \begin{bmatrix} \tfrac{1}{4} \\ \tfrac{11}{20} \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_2^{(1)} = \begin{bmatrix} \tfrac{5}{8} \\ 1 \\ \end{bmatrix} \]
+          </div>
+        </div>
+        <div class="row">
+          <div class="number">
+            \[\beta_0^{(2)} = \begin{bmatrix} \tfrac{3}{16} \\ \tfrac{3}{10} \\ \end{bmatrix} \]
+          </div>
+          <div class="number">
+            \[\beta_1^{(2)} = \begin{bmatrix} \tfrac{7}{16} \\ \tfrac{31}{40} \\ \end{bmatrix} \]
+          </div>
+        </div>
+        <div class="row">
+          <div class="number">
+            \[\beta_0^{(3)} = \begin{bmatrix} \tfrac{5}{16} \\ \tfrac{43}{80} \\ \end{bmatrix} \]
+          </div>
+        </div>
       </div>
     </div>
   </body>

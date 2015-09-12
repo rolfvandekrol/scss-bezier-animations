@@ -176,7 +176,9 @@ var steps = [].concat(
     var setupBox = function(step) {
       if (mathbox === undefined) {
         var element = $('.bezier', step).get(0);
-        mathbox = mathBox(element, {}).start();
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
 
         mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
         mathbox

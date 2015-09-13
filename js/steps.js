@@ -1,4 +1,27 @@
 
+    var factorial = function(n) {
+      var r = 1;
+
+      for (var i = 1; i <= n; i++) {
+        r = r*i;
+      }
+
+      return r;
+    };
+
+    var binomial_coefficient = function(n, k) {
+      return factorial(n) / (factorial(k) * factorial(n - k));
+    };
+
+    var bernstein = function(v, n) {
+      var c = binomial_coefficient(n, v);
+      return function(x) {
+        var y = 1 - x;
+
+        return c * Math.pow(x, v) * Math.pow(y, n - v);
+      };
+    };
+
 
 // sweep(0) => 0
 // sweep(1) => 1
@@ -230,7 +253,7 @@ var steps = [].concat(
                 points: true,
                 line: false,
                 color: demo_colors[colors[j]],
-                pointSize: j > 0 ? 15 : 20,
+                pointSize: j > 0 ? 20 : 25,
                 zIndex: j > 0 ? (2*j) : 10,
               });
 
@@ -267,6 +290,7 @@ var steps = [].concat(
     };
 
     return [
+      { key: 'bezier-title' },
       { key: 'bezier-1', 
         attach: function(step) { 
           setupBox(step); 
@@ -393,18 +417,90 @@ var steps = [].concat(
         detachNext: function(step) {
           clock.pause();
         }},
-      // { key: 'bezier-1', 
-      //   attach: function(step) {
-      //     setupBox(step);
-      //     clock.pauseAt(0.65);
-      //   },
-      //   detachPrev: function(step) {
-      //     clock.resume();
-      //   }},
     ];
   })(),
   [
     { key: 'decasteljau' },
     { key: 'decasteljau-numbers' }
-  ]
+  ],
+  (function() {
+    var mathbox;
+
+    var setupBox = function(step) {
+      if (mathbox === undefined) {
+        var element = $('.bernstein', step).get(0);
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
+
+        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
+        mathbox
+        // Cartesian viewport
+        .viewport({
+          type: 'cartesian',
+          range: [[0, 1], [0, 1]],
+          scale: [1, 1],
+        })
+
+        // Grid
+        .grid({
+          axis: [0, 1],
+          color: demo_colors.dark_gray,
+          lineWidth: 1,
+        });
+
+        setupElements();
+      }
+    };
+
+    var setupElements = function() {
+      (function() {
+        var i;
+        var colors = ['yellow', 'blue', 'red', 'green'];
+        var n = 3;
+
+        for (i = 0; i < 4; i++) {
+          (function(i) {
+            mathbox.curve({
+              id: 'bernstein-curve-' + i,
+              n: 64,
+              opacity: 1,
+              domain: [0, 0],
+              expression: bernstein(i, 3),
+              points: false,
+              line: true,
+              color: demo_colors[colors[i]],
+              zIndex: i,
+            });
+          })(i);
+        }
+      })();
+    };
+
+    return [
+      { key: 'bernstein-title' },
+      { key: 'bernstein-combination' },
+      { key: 'bernstein-combination-cubic' },
+      { key: 'bernstein-graph',
+        attach: function(step) { 
+          setupBox(step); 
+        }},
+      { key: 'bernstein-graph', 
+        attach: function(step) {
+          setupBox(step); 
+          mathbox.animate('#bernstein-curve-0', { domain: [0, 1] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-1', { domain: [0, 1] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-2', { domain: [0, 1] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-3', { domain: [0, 1] }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          mathbox.animate('#bernstein-curve-0', { domain: [0, 0] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-1', { domain: [0, 0] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-2', { domain: [0, 0] }, { duration: 500 });
+          mathbox.animate('#bernstein-curve-3', { domain: [0, 0] }, { duration: 500 });
+        }},
+      { key: 'bernstein-basic' },
+      { key: 'bernstein-basic-cubic' },
+    ];
+  })()
 );

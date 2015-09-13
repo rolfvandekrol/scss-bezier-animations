@@ -1,5 +1,9 @@
-.bezier {
-  width: 600px;
-  height: 600px;
+.bezier, .bernstein {
+  width: 800px;
+  height: 800px;
   margin: 0 auto;
+}
+
+.step-bernstein {
+  font-size: 1.5em;
 }

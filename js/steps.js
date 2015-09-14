@@ -502,5 +502,90 @@ var steps = [].concat(
       { key: 'bernstein-basic' },
       { key: 'bernstein-basic-cubic' },
     ];
+  })(),
+
+  (function() {
+    var mathbox;
+
+    var clock = create_clock(3);
+
+    var c = [[0, 0], [0.25, 0.1], [0.25, 1], [1,1]];
+
+    var decasteljau = function(i, j, t0) {
+      if (j == 0) {
+        return c[i];
+      }
+
+      var a = decasteljau(i, j-1, t0);
+      var b = decasteljau(i+1, j-1, t0);
+
+      var u0 = 1.0 - t0;
+      return [
+        a[0] * u0 + b[0] * t0,
+        a[1] * u0 + b[1] * t0
+      ];
+    };
+
+    var setupBox = function(step) {
+      if (mathbox === undefined) {
+        var element = $('.bezier', step).get(0);
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
+
+        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
+        mathbox
+        // Cartesian viewport
+        .viewport({
+          type: 'cartesian',
+          range: [[0, 1], [0, 1]],
+          scale: [1, 1],
+        })
+
+        // Grid
+        .grid({
+          axis: [0, 1],
+          color: demo_colors.dark_gray,
+          lineWidth: 1,
+        });
+
+        setupElements();
+      }
+    };
+
+    var setupElements = function() {
+      // main curve
+      mathbox.bezier({
+        id: 'bezier-curve',
+        domain: [0, 1],
+        expression: function(i) {
+          return decasteljau(0, i, clock.get());
+        },
+        order: 3,
+        color: demo_colors.green,
+        zIndex: 1,
+        opacity: 1
+      });
+
+      mathbox.bezier({
+        id: 'bezier-curve',
+        domain: [0, 1],
+        expression: function(i) {
+          return decasteljau(i, 3 - i, clock.get());
+        },
+        order: 3,
+        color: demo_colors.red,
+        zIndex: 1,
+        opacity: 1
+      });
+    };
+
+    return [
+      { key: 'bezier-2', 
+        attach: function(step) { 
+          setupBox(step); 
+          clock.start();
+        }},
+    ];
   })()
 );

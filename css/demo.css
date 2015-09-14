@@ -104,7 +104,10 @@ h2 {
     justify-content: center;
     padding: 10px 0; }
   .step-decasteljau-numbers .number {
-    padding: 20px; }
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
 
 .code {
   text-align: left;

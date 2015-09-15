@@ -423,6 +423,209 @@ var steps = [].concat(
     { key: 'decasteljau' },
     { key: 'decasteljau-numbers' }
   ],
+
+  (function() {
+    var mathbox;
+
+    var clock = create_clock(3);
+
+    var c = [[0, 0], [0.25, 0.1], [0.25, 1], [1,1]];
+
+    var decasteljau = function(i, j, t0) {
+      if (j == 0) {
+        return c[i];
+      }
+
+      var a = decasteljau(i, j-1, t0);
+      var b = decasteljau(i+1, j-1, t0);
+
+      var u0 = 1.0 - t0;
+      return [
+        a[0] * u0 + b[0] * t0,
+        a[1] * u0 + b[1] * t0
+      ];
+    };
+
+    var setupBox = function(step) {
+      if (mathbox === undefined) {
+        var element = $('.bezier', step).get(0);
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
+
+        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
+        mathbox
+        // Cartesian viewport
+        .viewport({
+          type: 'cartesian',
+          range: [[0, 1], [0, 1]],
+          scale: [1, 1],
+        })
+
+        // Grid
+        .grid({
+          axis: [0, 1],
+          color: demo_colors.dark_gray,
+          lineWidth: 1,
+        });
+
+        setupElements();
+      }
+    };
+
+    var setupElements = function() {
+      // main curve
+      mathbox.bezier({
+        id: 'bezier-curve',
+        domain: [0, 1],
+        expression: function(i) {
+          return decasteljau(0, i, 1 - clock.get());
+        },
+        order: 3,
+        color: demo_colors.blue,
+        zIndex: 1,
+        opacity: 1
+      });
+
+      mathbox.bezier({
+        id: 'bezier-curve',
+        domain: [0, 1],
+        expression: function(i) {
+          return decasteljau(i, 3 - i, 1 - clock.get());
+        },
+        order: 3,
+        color: demo_colors.yellow,
+        zIndex: 1,
+        opacity: 1
+      });
+
+      (function() {
+        var i, j;
+
+        for (j = 0; j < 4; j++) {
+          for (i = 0; i < (4 - j); i++) {
+            (function(i, j) {
+              mathbox.curve({
+                id: 'bezier-point-' + j + '-' + i,
+                n: 1,
+                opacity: 0,
+                domain: [0, 1],
+                expression: function (x) {
+                  return decasteljau(i, j, 1 - clock.get());
+                },
+                points: true,
+                line: false,
+                color: demo_colors.light_gray,
+                pointSize: j > 0 ? 20 : 25,
+                zIndex: 6-j,
+              });
+
+              if (i < (3 - j)) {
+                mathbox.bezier({
+                  id: 'bezier-polygon-' + j + '-' + i,
+                  n: 64,
+                  domain: [0, 1],
+                  expression: function (ii) {
+                    return decasteljau(i + ii, j, 1 - clock.get());
+                  },
+                  order: 1,
+                  color: demo_colors.light_gray,
+                  opacity: 0,
+                  zIndex: 0,
+                });
+              }
+            })(i, j);
+          }
+        }
+      })();
+    };
+
+    return [
+      { key: 'bezier-2', 
+        attach: function(step) { 
+          setupBox(step); 
+        }},
+      { key: 'bezier-2',
+        attach: function(step) {
+          setupBox(step);
+          mathbox.animate('#bezier-point-3-0', { opacity: 1 }, { duration: 500 });
+          clock.resume();
+        },
+        detachPrev: function(step) {
+          clock.waitTill('point-3-0', 0, function() {
+            mathbox.animate('#bezier-point-3-0', { opacity: 0 }, { duration: 500 });
+            clock.pause();
+          });
+        }},
+      { key: 'bezier-2',
+        attach: function(step) {
+          setupBox(step);
+
+          var i, j;
+          for (j = 0; j < 4; j++) {
+            for (i = 0; i < (4 - j); i++) {
+              if (!(j == 3 && i == 0)) {
+                mathbox.animate('#bezier-point-' + j + '-' + i, { opacity: 1 }, { duration: 500 });
+              }
+
+              if (i < (3 - j)) {
+                mathbox.animate('#bezier-polygon-' + j + '-' + i, { opacity: 1 }, { duration: 500 });
+              }
+            }
+          }
+        },
+        detachPrev: function(step) {
+          setupBox(step);
+          var i, j;
+          for (j = 0; j < 4; j++) {
+            for (i = 0; i < (4 - j); i++) {
+              if (!(j == 3 && i == 0)) {
+                mathbox.animate('#bezier-point-' + j + '-' + i, { opacity: 0 }, { duration: 500 });
+              }
+
+              if (i < (3 - j)) {
+                mathbox.animate('#bezier-polygon-' + j + '-' + i, { opacity: 0 }, { duration: 500 });
+              }
+            }
+          }
+        }
+      },
+      { key: 'bezier-2',
+        attach: function(step) {
+          setupBox(step);
+          mathbox.animate('#bezier-point-0-0', { color: demo_colors.blue }, { duration: 500 });
+          mathbox.animate('#bezier-point-1-0', { color: demo_colors.blue }, { duration: 500 });
+          mathbox.animate('#bezier-point-2-0', { color: demo_colors.blue }, { duration: 500 });
+
+          mathbox.animate('#bezier-point-0-3', { color: demo_colors.yellow }, { duration: 500 });
+          mathbox.animate('#bezier-point-1-2', { color: demo_colors.yellow }, { duration: 500 });
+          mathbox.animate('#bezier-point-2-1', { color: demo_colors.yellow }, { duration: 500 });
+
+          mathbox.animate('#bezier-point-3-0', { color: demo_colors.green }, { duration: 500 });
+        },
+        detachPrev: function(step) {
+          setupBox(step);
+          mathbox.animate('#bezier-point-0-0', { color: demo_colors.light_gray }, { duration: 500 });
+          mathbox.animate('#bezier-point-1-0', { color: demo_colors.light_gray }, { duration: 500 });
+          mathbox.animate('#bezier-point-2-0', { color: demo_colors.light_gray }, { duration: 500 });
+
+          mathbox.animate('#bezier-point-0-3', { color: demo_colors.light_gray }, { duration: 500 });
+          mathbox.animate('#bezier-point-1-2', { color: demo_colors.light_gray }, { duration: 500 });
+          mathbox.animate('#bezier-point-2-1', { color: demo_colors.light_gray }, { duration: 500 });
+
+          mathbox.animate('#bezier-point-3-0', { color: demo_colors.light_gray }, { duration: 500 });
+        }},
+      { key: 'bezier-2',
+        attach: function(step) {
+          setupBox(step);
+          clock.pauseAt(0.5);
+        },
+        detachPrev: function(step) {
+          clock.resume();
+        }}
+    ];
+  })(),
+
   (function() {
     var mathbox;
 
@@ -501,91 +704,6 @@ var steps = [].concat(
         }},
       { key: 'bernstein-basic' },
       { key: 'bernstein-basic-cubic' },
-    ];
-  })(),
-
-  (function() {
-    var mathbox;
-
-    var clock = create_clock(3);
-
-    var c = [[0, 0], [0.25, 0.1], [0.25, 1], [1,1]];
-
-    var decasteljau = function(i, j, t0) {
-      if (j == 0) {
-        return c[i];
-      }
-
-      var a = decasteljau(i, j-1, t0);
-      var b = decasteljau(i+1, j-1, t0);
-
-      var u0 = 1.0 - t0;
-      return [
-        a[0] * u0 + b[0] * t0,
-        a[1] * u0 + b[1] * t0
-      ];
-    };
-
-    var setupBox = function(step) {
-      if (mathbox === undefined) {
-        var element = $('.bezier', step).get(0);
-        mathbox = mathBox(element, {
-          stats: false,
-        }).start();
-
-        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
-        mathbox
-        // Cartesian viewport
-        .viewport({
-          type: 'cartesian',
-          range: [[0, 1], [0, 1]],
-          scale: [1, 1],
-        })
-
-        // Grid
-        .grid({
-          axis: [0, 1],
-          color: demo_colors.dark_gray,
-          lineWidth: 1,
-        });
-
-        setupElements();
-      }
-    };
-
-    var setupElements = function() {
-      // main curve
-      mathbox.bezier({
-        id: 'bezier-curve',
-        domain: [0, 1],
-        expression: function(i) {
-          return decasteljau(0, i, clock.get());
-        },
-        order: 3,
-        color: demo_colors.green,
-        zIndex: 1,
-        opacity: 1
-      });
-
-      mathbox.bezier({
-        id: 'bezier-curve',
-        domain: [0, 1],
-        expression: function(i) {
-          return decasteljau(i, 3 - i, clock.get());
-        },
-        order: 3,
-        color: demo_colors.red,
-        zIndex: 1,
-        opacity: 1
-      });
-    };
-
-    return [
-      { key: 'bezier-2', 
-        attach: function(step) { 
-          setupBox(step); 
-          clock.start();
-        }},
     ];
   })()
 );

@@ -39,11 +39,11 @@
   $r: (2*pow($a, 3) - 9*$a*$b + 27 * $c) / 54;
 
   @if (pow($r, 2) < pow($q, 3)) {
-    $rho: acos($r / sqrt(pow($q, 3)));
+    $theta: acos($r / sqrt(pow($q, 3)));
     @return (
-      -2 * sqrt($q) * cos($rho / 3) - $a / 3,
-      -2 * sqrt($q) * cos(($rho + 2*pi()) / 3) - $a / 3,
-      -2 * sqrt($q) * cos(($rho - 2*pi()) / 3) - $a / 3,
+      -2 * sqrt($q) * cos($theta / 3) - $a / 3,
+      -2 * sqrt($q) * cos(($theta + 2*pi()) / 3) - $a / 3,
+      -2 * sqrt($q) * cos(($theta - 2*pi()) / 3) - $a / 3,
     );
   }
 
@@ -57,7 +57,7 @@
     $bb: $q / $aa;
   }
 
-  @if ($aa == $bb) {
+  @if ($aa + $bb != 0) {
     @return (
       $aa + $bb - $a/3,
       -1 / 2 * ($aa + $bb) - $a/3

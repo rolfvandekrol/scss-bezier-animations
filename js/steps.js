@@ -198,7 +198,7 @@ var steps = [].concat(
 
     var setupBox = function(step) {
       if (mathbox === undefined) {
-        var element = $('.bezier', step).get(0);
+        var element = $('.graph', step).get(0);
         mathbox = mathBox(element, {
           stats: false,
         }).start();
@@ -448,7 +448,7 @@ var steps = [].concat(
 
     var setupBox = function(step) {
       if (mathbox === undefined) {
-        var element = $('.bezier', step).get(0);
+        var element = $('.graph', step).get(0);
         mathbox = mathBox(element, {
           stats: false,
         }).start();
@@ -631,7 +631,7 @@ var steps = [].concat(
 
     var setupBox = function(step) {
       if (mathbox === undefined) {
-        var element = $('.bernstein', step).get(0);
+        var element = $('.graph', step).get(0);
         mathbox = mathBox(element, {
           stats: false,
         }).start();
@@ -702,8 +702,271 @@ var steps = [].concat(
           mathbox.animate('#bernstein-curve-2', { domain: [0, 0] }, { duration: 500 });
           mathbox.animate('#bernstein-curve-3', { domain: [0, 0] }, { duration: 500 });
         }},
-      { key: 'bernstein-basic' },
-      { key: 'bernstein-basic-cubic' },
     ];
+  })(),
+
+  [
+    { key: 'bernstein-basic' },
+    { key: 'bernstein-basic-cubic' },
+    { key: 'bernstein-full-cubic' },
+    { key: 'bernstein-axis-cubic' },
+    { key: 'bernstein-function-abcd' },
+    { key: 'bernstein-equation-abc' },
+    { key: 'bernstein-equation-abc-full' }
+  ],
+
+  (function() {
+    var mathbox;
+
+    var cubic = function(a,b,c,d) {
+      return function(x) {
+        var r = a * Math.pow(x, 3) + b * Math.pow(x, 2) + c * x + d;
+
+        if (r > 1) {
+          return undefined;
+        }
+        if (r < -1) {
+          return undefined;
+        }
+
+        return r;
+      }
+    };
+
+    var setupBox = function(step) {
+      if (mathbox === undefined) {
+        var element = $('.graph', step).get(0);
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
+
+        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
+        mathbox
+        // Cartesian viewport
+        .viewport({
+          type: 'cartesian',
+          range: [[-1, 1], [-1, 1]],
+          scale: [1, 1],
+        })
+
+        // Grid
+        .grid({
+          axis: [0, 1],
+          color: demo_colors.dark_gray,
+          lineWidth: 1,
+        })
+
+        .axis({
+          id: 'axis-x',
+          axis: 0,
+          color: demo_colors.light_gray,
+          ticks: 5,
+          lineWidth: 2,
+          size: .05,
+        })
+        .axis({
+          id: 'axis-y',
+          axis: 1,
+          color: demo_colors.light_gray,
+          ticks: 5,
+          lineWidth: 2,
+          size: .05,
+        });
+
+        setupElements();
+      }
+    };
+
+    var setupElements = function() {
+      (function() {
+        var i;
+        var colors = ['yellow', 'blue', 'red', 'green'];
+        var n = 3;
+
+        for (i = 0; i < 4; i++) {
+          (function(i) {
+            mathbox.curve({
+              id: 'bernstein-curve-' + i,
+              n: 256,
+              opacity: 1,
+              domain: [-1, 1],
+              expression: cubic(1, i, -1 * i, i / -3 + 1/2),
+              points: false,
+              line: true,
+              color: demo_colors[colors[i]],
+              zIndex: i,
+            });
+          })(i);
+        }
+      })();
+    };
+
+    return [
+      { key: 'graphs-cubic',
+        attach: function(step) { 
+          setupBox(step); 
+        }},
+    ];
+  })(),
+
+  [
+    { key: 'bernstein-equation-abcd' },
+    { key: 'bernstein-equation-abcd-normalize' },
+    { key: 'bernstein-equation-abcd-full-normalized' },
+    { key: 'bernstein-conclusion' }
+  ],
+  
+  (function() {
+    var mathbox;
+
+    var c = [[0, 0], [0.25, 0.1], [0.25, 1], [1,1]];
+    var f = 0.35532;
+
+    var clock = create_clock(2);
+
+    var decasteljau = function(i, j, t0) {
+      if (j == 0) {
+        return c[i];
+      }
+
+      var a = decasteljau(i, j-1, t0);
+      var b = decasteljau(i+1, j-1, t0);
+
+      var u0 = 1.0 - t0;
+      return [
+        a[0] * u0 + b[0] * t0,
+        a[1] * u0 + b[1] * t0
+      ];
+    };
+
+    var corner = decasteljau(0, 3, f);
+
+    var normalize = function(point) {
+      var t = clock.get();
+
+      var x = point[0]
+      var y = point[1]
+
+      var x_offset = (x * (1 / corner[0] - 1)) * t;
+      var y_offset = (y * (1 / corner[1] - 1)) * t;
+
+      return [
+        x + x_offset,
+        y + y_offset
+      ];
+    }
+
+    var setupBox = function(step) {
+      if (mathbox === undefined) {
+        var element = $('.graph', step).get(0);
+        mathbox = mathBox(element, {
+          stats: false,
+        }).start();
+
+        mathbox.world().tRenderer().setClearColorHex(demo_colors.black, 0);
+        mathbox
+        // Cartesian viewport
+        .viewport({
+          type: 'cartesian',
+          range: [[0, 1], [0, 1]],
+          scale: [1, 1],
+        })
+
+        // Grid
+        .grid({
+          axis: [0, 1],
+          color: demo_colors.dark_gray,
+          lineWidth: 1,
+        });
+
+        setupElements();
+      }
+    };
+
+    var setupElements = function() {
+      mathbox.bezier({
+        id: 'bezier-curve',
+        domain: [0, 1],
+        expression: function(i) {
+          return normalize(decasteljau(0, i, f));
+        },
+        order: 3,
+        color: demo_colors.blue,
+        zIndex: 1,
+        opacity: 1
+      });
+
+      for (var i = 0; i < 4; i++) {
+        (function(i) {
+          mathbox.curve({
+            id: 'bezier-point-' + i,
+            n: 1,
+            opacity: 1,
+            domain: [0, 1],
+            expression: function (x) {
+              return normalize(decasteljau(0, i, f));
+            },
+            points: true,
+            line: false,
+            color: demo_colors.light_gray,
+            pointSize: 20,
+            zIndex: 3,
+          });
+
+          if (i < 3) {
+            mathbox.bezier({
+              id: 'bezier-polygon-' + i,
+              n: 64,
+              domain: [0, 1],
+              expression: function (ii) {
+                return normalize(decasteljau(0, i+ii, f));
+              },
+              order: 1,
+              color: demo_colors.light_gray,
+              opacity: 1,
+              zIndex: 0,
+            });
+          }
+        })(i);
+      }
+    };
+
+    return [
+      { key: 'bezier-normalize-intro' },
+      { key: 'bezier-normalize',
+        attach: function(step) { 
+          setupBox(step);
+        }},
+      { key: 'bezier-normalize',
+        attach: function(step) { 
+          setupBox(step);
+
+          clock.resume();
+          clock.pauseAt(1);
+        },
+        detachPrev: function(step) { 
+          clock.resume();
+          clock.pauseAt(0);
+        }},
+    ];
+  })(),
+
+  (function() {
+    var intro_example_go = {
+      attach: function(step) {
+        step.addClass('intro-example-go');
+      },
+      detachPrev: function(step) {
+        step.removeClass('intro-example-go');
+      }
+    };
+
+    var result = [
+      { key: 'result' },
+      jQuery.extend({ key: 'result'}, intro_example_go),
+      { key: 'result-code' }
+    ];
+
+    return result;
   })()
 );

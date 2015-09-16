@@ -45,6 +45,16 @@ h1 {
 h2 {
   font-size: 1.5em; }
 
+p .MathJax_Display {
+  margin: 0; }
+
+hr {
+  padding: 0 0 19px;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid white;
+  margin-bottom: 20px; }
+
 .intro-example-wrapper {
   width: 997px;
   height: 97px;
@@ -85,13 +95,36 @@ h2 {
 .intro-example-ease-fast .cube {
   transition: left 0.3s ease; }
 
-.bezier, .bernstein {
+.intro-example-result-1 .cube {
+  transition: left 3s cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+.intro-example-result-2 .cube {
+  transition: left 1.83278s cubic-bezier(0.20331, 0.55162, 0.49972, 1) 1.16722s; }
+
+.intro-example-go .intro-example-result-2 .cube {
+  left: 300px;
+  transition: left 0.64997s cubic-bezier(0.41, 0.10659, 0.67431, 0.51619); }
+
+.graph {
   width: 800px;
   height: 800px;
-  margin: 0 auto; }
+  margin: 0 auto;
+  position: relative; }
 
 .step-bernstein {
   font-size: 1.5em; }
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: stretch; }
+  .columns .column {
+    flex-grow: 1;
+    width: 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; }
 
 .step-decasteljau {
   font-size: 1.2em; }

@@ -69,3 +69,37 @@ $example-width: $example-transition-width + $example-cube-width;
     transition: left ($transition-duration / 10) ease;
   }
 }
+
+$base-transition-bezier: 0 0, 0.25 0.1, 0.25 1, 1 1;
+$base-transition-timing-function: cubic-bezier-to-css($base-transition-bezier...);
+
+.intro-example-result-1 {
+  .cube {
+    transition: left $transition-duration $base-transition-timing-function;
+  }
+}
+
+$param: cubic-bezier-parameter-from-progression($base-transition-bezier, 2.0 / 3.0);
+$delay: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+$duration: 1 - $delay;
+$func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, $param, 1)...);
+
+.intro-example-result-2 {
+  .cube {
+    transition: left ($duration * $transition-duration) $func ($delay * $transition-duration);
+  }
+}
+
+$param: cubic-bezier-parameter-from-progression($base-transition-bezier, 1.0 / 3.0);
+$duration: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+
+$func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, 0, $param)...);
+
+.intro-example-go {
+  .intro-example-result-2 {
+    .cube {
+      left: ($example-transition-width / 3);
+      transition: left ($duration * $transition-duration) $func;
+    }
+  }
+}

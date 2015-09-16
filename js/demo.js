@@ -14,7 +14,7 @@ window.demo_colors = {
 }
 
 $(document).ready(function() {
-  var step = 0;
+  var step = 53;
 
   var redraw = function() {
     var w = $(window).width();

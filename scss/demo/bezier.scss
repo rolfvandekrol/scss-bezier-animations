@@ -1,9 +1,25 @@
-.bezier, .bernstein {
+.graph {
   width: 800px;
   height: 800px;
   margin: 0 auto;
+  position: relative;
 }
 
 .step-bernstein {
   font-size: 1.5em;
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: stretch;
+
+  .column {
+    flex-grow: 1;
+    width: 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
 }

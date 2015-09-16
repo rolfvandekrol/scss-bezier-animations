@@ -1,3 +1,5 @@
+@import 'bezier';
+
 $black: #000;
 $white: #fff;
 $green: #00e500;
@@ -61,8 +63,21 @@ h2 {
   font-size: 1.5em;
 }
 
+p .MathJax_Display {
+  margin: 0;
+}
+
+hr {
+  padding: 0 0 19px;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid white;
+  margin-bottom: 20px;
+}
+
 @import 'demo/intro';
 @import 'demo/bezier';
 @import 'demo/decasteljau';
 
 @import 'demo/code';
+

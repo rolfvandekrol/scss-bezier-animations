@@ -122,7 +122,7 @@
         <h2>Bézier curves</h2>
       </div>
       <div class="step step-bezier-1">
-        <div class="bezier"></div>
+        <div class="graph"></div>
       </div>
       <div class="step step-decasteljau">
         <h2>De Casteljau's Algorithm</h2>
@@ -173,7 +173,7 @@
       </div>
 
       <div class="step step-bezier-2">
-        <div class="bezier"></div>
+        <div class="graph"></div>
       </div>
 
       <div class="step step-bernstein-title">
@@ -186,13 +186,160 @@
         <p>\[ \begin{align} B(t) & = \beta_{0} \cdot b_{0,3}(t) \\ & + \beta_{1} \cdot b_{1,3}(t) \\ & + \beta_{2} \cdot b_{2,3}(t) \\ & + \beta_{3} \cdot b_{3,3}(t) \end{align} \]</p>
       </div>
       <div class="step step-bernstein step-bernstein-graph">
-        <div class="bernstein"></div>
+        <div class="graph"></div>
       </div>
       <div class="step step-bernstein step-bernstein-basic">
         <p>\[b_{\nu,n}(t) = {n \choose \nu} t^{\nu} \left( 1 - t \right)^{n - \nu}, \quad \nu = 0, \ldots, n.\]</p>
       </div>
       <div class="step step-bernstein step-bernstein-basic-cubic">
         <p>\[ \begin{align} b_{0,3}(t) & = (1 - t)^3 \\ b_{1,3}(t) & = 3t(1 - t)^2 \\ b_{2,3}(t) & = 3t^2(1 - t) \\ b_{3,3}(t) & = t^3 \end{align} \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-full-cubic">
+        <p>\[ \begin{align} B(t) & = \beta_{0} \cdot (1 - t)^3 \\ & + \beta_{1} \cdot 3t(1 - t)^2 \\ & + \beta_{2} \cdot  3t^2(1 - t) \\ & + \beta_{3} \cdot t^3 \end{align} \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-axis-cubic">
+        <div class="columns">
+          <div class="column">
+            <p>Duration</p>
+            <p>\[ \begin{align} B_{x}(t) & = \beta_{0,x} \cdot (1 - t)^3 \\ & + \beta_{1,x} \cdot 3t(1 - t)^2 \\ & + \beta_{2,x} \cdot  3t^2(1 - t) \\ & + \beta_{3,x} \cdot t^3 \end{align} \]</p>
+          </div>
+          <div class="column">
+            <p>Progress</p>
+            <p>\[ \begin{align} B_{y}(t) & = \beta_{0,y} \cdot (1 - t)^3 \\ & + \beta_{1,y} \cdot 3t(1 - t)^2 \\ & + \beta_{2,y} \cdot  3t^2(1 - t) \\ & + \beta_{3,y} \cdot t^3 \end{align} \]</p>
+          </div>
+        </div>
+      </div>
+      <div class="step step-bernstein step-bernstein-function-abcd">
+        <p>\[ B_{y}(t) = a t^3 + b t^2 + c t + d \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-equation-abc">
+        <p>\[ a x^2 + b x + c = 0 \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-equation-abc-full">
+        <p>\[ a x^2 + b x + c = 0 \]</p>
+        <p>\[ \Delta = b^2 - 4ac \]</p>
+        <hr>
+        <div class="columns">
+          <div class="column">
+            <p>\[ \Delta > 0 \]</p>
+            <p>\[ x_0 = \frac{-b + \sqrt {\Delta}}{2a} \]</p>
+            <p>\[ x_1 = \frac{-b - \sqrt {\Delta}}{2a} \]</p>
+          </div>
+          <div class="column">
+            <p>\[ \Delta = 0 \]</p>
+            <p>\[ x = \frac{-b}{2a} \]</p>
+          </div>
+          <div class="column">
+            <p>\[ \Delta < 0 \]</p>
+            <p>Complex roots.</p>
+          </div>
+        </div>
+      </div>
+      <div class="step step-graphs-cubic">
+        <div class="graph"></div>
+      </div>
+      <div class="step step-bernstein step-bernstein-equation-abcd">
+        <p>\[ a x^3 + b x^2 + c x + d = 0 \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-equation-abcd-normalize">
+        <p>\[ a x^3 + b x^2 + c x + d = 0 \]</p>
+        <p>\[ x^3 + \frac{b}{a} x^2 + \frac{c}{a} x + \frac{d}{a} = 0 \]</p>
+      </div>
+      <div class="step step-bernstein step-bernstein-equation-abcd-full-normalized">
+        <p>\[ x^3 + a x^2 + b x + c = 0 \]</p>
+        <div class="columns">
+          <div class="column">
+            <p>\[ Q = \frac{a^2 - 3b}{9} \]</p>
+          </div>
+          <div class="column">
+            <p>\[ R = \frac{2a^3 - 9ab + 27c}{54} \]</p>
+          </div>
+        </div>
+        <hr>
+        <div class="columns">
+          <div class="column">
+            <p>\[ R^2 < Q^3 \]</p>
+            <p>\[ \theta = arccos \left(\frac{R}{\sqrt{Q^3}} \right) \]</p>
+            <p>\[ x_0 = -2 \sqrt{Q} \cdot cos \left(\frac{\theta}{3} \right) - \frac{a}{3} \]</p>
+            <p>\[ x_1 = -2 \sqrt{Q} \cdot cos \left(\theta + 2 \pi \right) - \frac{a}{3} \]</p>
+            <p>\[ x_2 = -2 \sqrt{Q} \cdot cos \left(\theta - 2 \pi \right) - \frac{a}{3} \]</p>
+          </div>
+          <div class="column">
+            <p>\[ R^2 >= Q^3 \]</p>
+            <p>\[ A = -sgn(R) \cdot \sqrt[3]{ |R| + \sqrt{R^2 - Q^3} } \]</p>
+            <p>\( B = \frac{Q}{A} \)&nbsp;&nbsp;or&nbsp;&nbsp;\( B = 0 \)&nbsp;&nbsp;if&nbsp;&nbsp;\( A = 0 \)</p>
+            <p>\[ x_0 = (A+B) - \frac{a}{3} \]</p>
+            <p>\[ x_0 = - \frac{1}{2} (A+B) - \frac{a}{3} \]</p>
+          </div>
+        </div>
+      </div>
+      <div class="step step-bernstein step-bernstein-conclusion">
+        <p>\[ B_{y}(t_0) = y_0 \]</p>
+        <p>\[ t_0 \]</p>
+        <p>\[ B_{x}(t_0) \]</p>
+      </div>
+      <div class="step step-bezier-normalize-intro">
+        <h2>CSS Bézier curves</h2>
+      </div>
+      <div class="step step-bezier-normalize">
+        <div class="graph"></div>
+      </div>
+      <div class="step step-result">
+        <div class="code"><pre>.a {
+  left: 0;
+  transition: left 3s cubic-bezier(0.25, 0.1, 0.25, 1); 
+
+  .go &amp; {
+    left: 900px;
+  }
+}
+
+.b {
+  transition: left 1.83278s cubic-bezier(0.20331, 0.55162, 0.49972, 1) 1.16722s;
+
+  .go &amp; {
+    left: 300px;
+    transition: left 0.64997s cubic-bezier(0.41, 0.10659, 0.67431, 0.51619);
+  }
+}</pre></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-result-1"><div class="cube"></div></div></div>
+        <div class="intro-example-wrapper"><div class="intro-example intro-example-result-2"><div class="cube"></div></div></div>
+      </div>
+      <div class="step step-result-code">
+        <div class="code"><pre>$base-transition-bezier: 0 0, 0.25 0.1, 0.25 1, 1 1;
+$base-transition-timing-function: cubic-bezier-to-css($base-transition-bezier...);
+
+
+
+$param: cubic-bezier-parameter-from-progression($base-transition-bezier, 2.0 / 3.0);
+$delay: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+$duration: 1 - $delay;
+$func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, $param, 1)...);
+
+.a {
+  left: 0;
+  transition: left ($duration * $transition-duration) $func ($delay * $transition-duration);
+
+  .go &amp; {
+    left: 900px;
+  }
+}
+
+$param: cubic-bezier-parameter-from-progression($base-transition-bezier, 1.0 / 3.0);
+$duration: cubic-bezier-duration-from-parameter($base-transition-bezier, $param);
+$func: cubic-bezier-to-css(bezier-segment($base-transition-bezier, 0, $param)...);
+
+.b {
+  left: 0;
+
+}
+
+ {
+      left: ($example-transition-width / 3);
+      transition: left ($duration * $transition-duration) $func;
+    }
+  }
+}</pre></div>
       </div>
     </div>
   </body>

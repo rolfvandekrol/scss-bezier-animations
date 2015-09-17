@@ -968,5 +968,10 @@ var steps = [].concat(
     ];
 
     return result;
-  })()
+  })(),
+
+  [
+    { key: 'questions' },
+    { key: 'thanks' }
+  ]
 );
